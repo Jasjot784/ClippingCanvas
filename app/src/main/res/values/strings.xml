@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ClippingCanvas</string>
+    <string name="clipping">Clipping</string>
 </resources>
