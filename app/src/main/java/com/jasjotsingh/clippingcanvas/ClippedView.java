@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Region;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -93,6 +95,29 @@ public class ClippedView extends View {
         canvas.drawColor(Color.GRAY);
         canvas.save();
         canvas.translate(mColumnOne, mRowOne);
+        drawClippedRectangle(canvas);
+        canvas.restore();
+
+        canvas.save();
+// Move the origin to the right for the next rectangle.
+        canvas.translate(mColumnnTwo, mRowOne);
+// Use the subtraction of two clipping rectangles to create a frame.
+        canvas.clipRect(2 * mRectInset, 2 * mRectInset,
+                mClipRectRight-2 * mRectInset, mClipRectBottom-2 * mRectInset);
+// The method clipRect(float, float, float, float, Region.Op
+// .DIFFERENCE) was deprecated in API level 26. The recommended
+// alternative method is clipOutRect(float, float, float, float),
+// which is currently available in API level 26 and higher.
+        if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            canvas.clipRect(4*mRectInset, 4*mRectInset,
+                    mClipRectRight-4*mRectInset, mClipRectBottom-4*mRectInset,
+                    Region.Op.DIFFERENCE);
+        else{
+            canvas.clipOutRect(4*mRectInset, 4*mRectInset,
+                    mClipRectRight-4*mRectInset,
+                    mClipRectBottom-4*mRectInset);
+        }
+
         drawClippedRectangle(canvas);
         canvas.restore();
     }
