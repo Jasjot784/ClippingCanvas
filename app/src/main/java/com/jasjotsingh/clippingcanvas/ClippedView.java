@@ -142,5 +142,87 @@ public class ClippedView extends View {
 
         drawClippedRectangle(canvas);
         canvas.restore();
+
+        // Use the intersection of two rectangles as the clipping region.
+        canvas.save();
+        canvas.translate(mColumnnTwo, mRowTwo);
+        canvas.clipRect(mClipRectLeft, mClipRectTop,
+                mClipRectRight-mSmallRectOffset,
+                mClipRectBottom-mSmallRectOffset);
+// The method clipRect(float, float, float, float, Region.Op
+// .INTERSECT) was deprecated in API level 26. The recommended
+// alternative method is clipRect(float, float, float, float), which
+// is currently available in API level 26 and higher.
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            canvas.clipRect(mClipRectLeft + mSmallRectOffset,
+                    mClipRectTop + mSmallRectOffset, mClipRectRight,
+                    mClipRectBottom, Region.Op.INTERSECT);
+        } else {
+            canvas.clipRect(mClipRectLeft + mSmallRectOffset,
+                    mClipRectTop + mSmallRectOffset, mClipRectRight,
+                    mClipRectBottom);
+        }
+
+        drawClippedRectangle(canvas);
+        canvas.restore();
+
+        // You can combine shapes and draw any path to define a clipping region.
+        canvas.save();
+        canvas.translate(mColumnOne, mRowThree);
+        mPath.rewind();
+        mPath.addCircle(mClipRectLeft+mRectInset+mCircleRadius,
+                mClipRectTop+mCircleRadius+mRectInset,
+                mCircleRadius, Path.Direction.CCW);
+        mPath.addRect(mClipRectRight/2-mCircleRadius,
+                mClipRectTop+mCircleRadius+mRectInset,
+                mClipRectRight/2+mCircleRadius,
+                mClipRectBottom-mRectInset,Path.Direction.CCW);
+        canvas.clipPath(mPath);
+        drawClippedRectangle(canvas);
+        canvas.restore();
+
+        // Use a rounded rectangle. Use mClipRectRight/4 to draw a circle.
+        canvas.save();
+        canvas.translate(mColumnnTwo, mRowThree);
+        mPath.rewind();
+        mPath.addRoundRect(mRectF, (float)mClipRectRight/4,
+                (float)mClipRectRight/4, Path.Direction.CCW);
+        canvas.clipPath(mPath);
+        drawClippedRectangle(canvas);
+        canvas.restore();
+
+        // Clip the outside around the rectangle.
+        canvas.save();
+// Move the origin to the right for the next rectangle.
+        canvas.translate(mColumnOne, mRowFour);
+        canvas.clipRect(2 * mRectInset, 2 * mRectInset,
+                mClipRectRight-2*mRectInset,
+                mClipRectBottom-2*mRectInset);
+        drawClippedRectangle(canvas);
+        canvas.restore();
+
+        // Draw text with a translate transformation applied.
+        canvas.save();
+        mPaint.setColor(Color.CYAN);
+// Align the RIGHT side of the text with the origin.
+        mPaint.setTextAlign(Paint.Align.LEFT);
+// Apply transformation to canvas.
+        canvas.translate(mColumnnTwo, mTextRow);
+// Draw text.
+        canvas.drawText(
+                getContext().getString(R.string.translated), 0, 0, mPaint);
+        canvas.restore();
+
+// Draw text with a translate and skew transformations applied.
+        canvas.save();
+        mPaint.setTextSize(mTextSize);
+        mPaint.setTextAlign(Paint.Align.RIGHT);
+// Position text.
+        canvas.translate(mColumnnTwo, mTextRow);
+        // Apply skew transformation.
+        canvas.skew(0.2f, 0.3f);
+        canvas.drawText(
+                getContext().getString(R.string.skewed), 0, 0, mPaint);
+        canvas.restore();
     }
 }
