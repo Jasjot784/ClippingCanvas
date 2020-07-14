@@ -120,5 +120,27 @@ public class ClippedView extends View {
 
         drawClippedRectangle(canvas);
         canvas.restore();
+
+        // Draw a rectangle that uses a circular clipping region
+// created from a circular path.
+        canvas.save();
+        canvas.translate(mColumnOne, mRowTwo);
+// Clears any lines and curves from the path but unlike reset(),
+// keeps the internal data structure for faster reuse.
+        mPath.rewind();
+        mPath.addCircle(mCircleRadius, mClipRectBottom-mCircleRadius,
+                mCircleRadius, Path.Direction.CCW);
+// The method clipPath(path, Region.Op.DIFFERENCE) was deprecated in
+// API level 26. The recommended alternative method is
+// clipOutPath(Path), which is currently available in
+// API level 26 and higher.
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            canvas.clipPath(mPath, Region.Op.DIFFERENCE);
+        } else {
+            canvas.clipOutPath(mPath);
+        }
+
+        drawClippedRectangle(canvas);
+        canvas.restore();
     }
 }
